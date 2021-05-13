@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-import codecs
 from setuptools import setup
 
 
 def read(fname):
     file_path = os.path.join(os.path.dirname(__file__), fname)
-    return codecs.open(file_path, encoding='utf-8').read()
+    return open(file_path, encoding='utf-8').read()
 
 
 setup(
@@ -20,9 +19,8 @@ setup(
     maintainer_email='musen_nmb@qq.com',
     license='MIT',
     url='https://github.com/musen123/pytest-testreport',
-    description='pytest test report',
-    long_description=read('README.rst'),
-
+    long_description=read('README.md'),
+    long_description_content_type="text/markdown",
     py_modules=['pytest_testreport'],
     python_requires='>=3.5',
     install_requires=['pytest>=3.5.0'],
@@ -44,7 +42,7 @@ setup(
         'License :: OSI Approved :: MIT License',
     ],
     package_data={
-        "": ["*.html",'*.rst'],
+        "": ["*.html",'*.md'],
     },
     entry_points={
         'pytest11': [
