@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from setuptools import setup
+from setuptools import setup,find_packages
 
 
 def read(fname):
@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name='pytest-testreport',
-    version='1.0.0',
+    version='1.0.1',
     author='MuSen',
     author_email='musen_nmb@qq.com',
     maintainer='testreport',
@@ -21,9 +21,10 @@ setup(
     url='https://github.com/musen123/pytest-testreport',
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
-    py_modules=['pytest_testreport'],
+    # py_modules=['pytestTestreport'],
     python_requires='>=3.5',
     install_requires=['pytest>=3.5.0'],
+    packages=find_packages(),
     classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Pytest',
@@ -46,7 +47,7 @@ setup(
     },
     entry_points={
         'pytest11': [
-            'testreport = pytest_testreport',
+            'testreport = pytestTestreport.pytestTestreport',
         ],
     },
 )
