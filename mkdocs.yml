@@ -1,0 +1,10 @@
+site_name: pytest-testreport
+site_description: pytest test report
+site_author: testreport
+
+theme: readthedocs
+
+repo_url: https://github.com/musen123/pytest-testreport
+
+pages:
+- Home: index.md
