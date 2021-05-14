@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name='pytest-testreport',
-    version='1.0.1',
+    version='1.0.5',
     author='MuSen',
     author_email='musen_nmb@qq.com',
     maintainer='testreport',
@@ -47,7 +47,7 @@ setup(
     },
     entry_points={
         'pytest11': [
-            'testreport = pytestTestreport.pytestTestreport',
+            'testreport = pytestTestreport.pytest_testreport',
         ],
     },
 )
