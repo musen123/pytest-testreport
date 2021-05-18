@@ -57,7 +57,7 @@ def pytest_sessionfinish(session):
     conf = ConfigParser()
     name = 'report.html'
     if session.config.inifile:
-        conf.read(session.config.inifile, encoding='utf-8')
+        conf.read(session.config.inifile)
     if 'report' in conf.sections():
         if 'title' in conf.options('report'):
             test_result['title'] = conf.get('report', 'title') or '测试报告'

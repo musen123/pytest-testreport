@@ -24,8 +24,7 @@ pytest-testreport是基于python3.6开发的，安装前请确认你的python版
 ```pip install pytest-testreport```
 
 ### 3、使用文档：
-https://unittestreport.readthedocs.io/en/latest/#
-
+https://unittestreport.readthedocs.io/en/latest/doc9_pytest/
 ### 备注：
 
 - ##### 开发者：柠檬班—木森、柠檬班—雨泽
