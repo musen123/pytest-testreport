@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import os
 import time
 import pytest
@@ -24,7 +25,8 @@ test_result = {
 
 
 def pytest_make_parametrize_id(config, val, argname):
-    return val.get('title') or val.get('desc')
+    if isinstance(val, dict):
+        return val.get('title') or val.get('desc')
 
 
 def pytest_runtest_logreport(report):
@@ -48,29 +50,39 @@ def pytest_sessionstart(session):
     test_result["begin_time"] = start_ts.strftime("%Y-%m-%d %H:%M:%S")
 
 
-from configparser import ConfigParser
+def handle_history_data(report_dir, test_result):
+    """
+    处理历史数据
+    :return:
+    """
+    try:
+        with open(os.path.join(report_dir, 'history.json'), 'r', encoding='utf-8') as f:
+            history = json.load(f)
+    except :
+        history = []
+    history.append({'success': test_result['passed'],
+                    'all': test_result['all'],
+                    'fail': test_result['failed'],
+                    'skip': test_result['skipped'],
+                    'error': test_result['error'],
+                    'runtime': test_result['run_time'],
+                    'begin_time': test_result['begin_time'],
+                    'pass_rate': test_result['pass_rate'],
+                    })
 
+    with open(os.path.join(report_dir, 'history.json'), 'w', encoding='utf-8') as f:
+        json.dump(history, f, ensure_ascii=True)
+    return history
 
 def pytest_sessionfinish(session):
     """在整个测试运行完成之后调用的钩子函数,可以在此处生成测试报告"""
     report2 = session.config.getoption('--report')
-    conf = ConfigParser()
-    name = 'report.html'
-    if session.config.inifile:
-        conf.read(session.config.inifile)
-    if 'report' in conf.sections():
-        if 'title' in conf.options('report'):
-            test_result['title'] = conf.get('report', 'title') or '测试报告'
-        if 'tester' in conf.options('report'):
-            test_result['tester'] = conf.get('report', 'tester') or '小测试'
-        if 'desc' in conf.options('report'):
-            test_result['desc'] = conf.get('report', 'desc') or '无'
-        if 'file_name' in conf.options('report'):
-            name = conf.get('report', 'file_name')
-    elif report2:
-        test_result['title'] = '测试报告'
-        test_result['tester'] = '小测试'
-        test_result['desc'] = '无'
+
+    if report2:
+        test_result['title'] = session.config.getoption('--title') or '测试报告'
+        test_result['tester'] = session.config.getoption('--tester') or '小测试'
+        test_result['desc'] = session.config.getoption('--desc') or '无'
+        templates_name = session.config.getoption('--template') or '1'
         name = report2
     else:
         return
@@ -91,12 +103,20 @@ def pytest_sessionfinish(session):
         test_result['pass_rate'] = '{:.2f}'.format(test_result['passed'] / test_result['all'] * 100)
     else:
         test_result['pass_rate'] = 0
+    # 保存历史数据
+    test_result['history'] = handle_history_data('reports', test_result)
+    # 渲染报告
     template_path = os.path.join(os.path.dirname(__file__), './templates')
     env = Environment(loader=FileSystemLoader(template_path))
-    template = env.get_template('templates.html')
+
+    if templates_name == '2':
+        template = env.get_template('templates2.html')
+    else:
+        template = env.get_template('templates.html')
     report = template.render(test_result)
     with open(file_name, 'wb') as f:
         f.write(report.encode('utf8'))
+
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -122,4 +142,32 @@ def pytest_addoption(parser):
         metavar="path",
         default=None,
         help="create html report file at given path.",
+    )
+    group.addoption(
+        "--title",
+        action="store",
+        metavar="path",
+        default=None,
+        help="pytest-testreport Generate a title of the repor",
+    )
+    group.addoption(
+        "--tester",
+        action="store",
+        metavar="path",
+        default=None,
+        help="pytest-testreport Generate a tester of the report",
+    )
+    group.addoption(
+        "--desc",
+        action="store",
+        metavar="path",
+        default=None,
+        help="pytest-testreport Generate a description of the report",
+    )
+    group.addoption(
+        "--template",
+        action="store",
+        metavar="path",
+        default=None,
+        help="pytest-testreport Generate a template of the report",
     )

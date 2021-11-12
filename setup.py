@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name='pytest-testreport',
-    version='1.0.6',
+    version='1.1.1',
     author='MuSen',
     author_email='musen_nmb@qq.com',
     maintainer='testreport',
